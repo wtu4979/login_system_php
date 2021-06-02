@@ -11,12 +11,23 @@ if (isset($_POST['submit'])) {
     $cpassword = md5($_POST['cpassword']);
 
     if ($password == $cpassword) {
-        $sql = "INSERT INTO users (username, email, password)
-                VALUES('$username', '$email', '$password')";
-
+        $sql = "SELECT * FROM users WHERE email='$email'";
         $result = mysqli_query($conn, $sql);
-        if (!$result) {
-            echo "<script>alert('Woops! Something went wrong.')</script>";
+        if (!$result->num_rows > 0) {
+            $sql = "INSERT INTO users (username, email, password)
+					VALUES ('$username', '$email', '$password')";
+            $result = mysqli_query($conn, $sql);
+            if ($result) {
+                echo "<script>alert('Wow! User Registration Completed.')</script>";
+                $username = "";
+                $email = "";
+                $_POST['password'] = "";
+                $_POST['cpassword'] = "";
+            } else {
+                echo "<script>alert('Woops! Something went wrong.')</script>";
+            }
+        } else {
+            echo "<script>alert('Woops! Email Already Exists.')</script>";
         }
     } else {
         echo "<script>alert('Password Not Matched.')</script>";
